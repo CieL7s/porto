@@ -5,12 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Riel Augustus - Backend Developer spesialis JavaScript, Bun Runtime, dan ElysiaJS">
     <title>Riel Augustus | Backend Developer</title>
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
+    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
+    
     <script>
         tailwind.config = {
             theme: {
@@ -20,7 +23,8 @@
                             red: '#FF0000',
                             black: '#111111',
                             white: '#F4F4F0',
-                            gray: '#888888'
+                            gray: '#888888',
+                            darkGray: '#333333'
                         }
                     },
                     fontFamily: { sans: ['Inter', 'sans-serif'] },
@@ -29,19 +33,45 @@
             }
         }
     </script>
-    <style rel="stylesheet" type="text/css" href="style.css"></style>
+
+    <style>
+        body { background-color: theme('colors.swiss.white'); color: theme('colors.swiss.black'); overflow-x: hidden; cursor: none; }
+        body::before {
+            content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            opacity: 0.05; pointer-events: none; z-index: 9999;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+        ::-webkit-scrollbar { width: 0px; }
+        #bg-canvas { position: fixed; top: 0; left: 0; z-index: 0; width: 100%; height: 100%; pointer-events: none; opacity: 0.12; }
+        
+        /* Custom Cursor */
+        #cursor { width: 20px; height: 20px; border: 2px solid #FF0000; border-radius: 50%; position: fixed; pointer-events: none; z-index: 10000; transition: transform 0.1s ease; }
+        #cursor-dot { width: 4px; height: 4px; background: #FF0000; border-radius: 50%; position: fixed; pointer-events: none; z-index: 10000; }
+
+        .status-dot { width: 8px; height: 8px; background-color: theme('colors.swiss.red'); border-radius: 50%; display: inline-block; margin-right: 8px; animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
+        
+        .marquee { display: flex; overflow: hidden; user-select: none; gap: 2rem; border-top: 2px solid #111111; border-bottom: 2px solid #111111; padding: 1.5rem 0; background: theme('colors.swiss.white'); }
+        .marquee-content { flex-shrink: 0; display: flex; justify-content: space-around; min-width: 100%; gap: 2rem; animation: scroll 25s linear infinite; }
+        @keyframes scroll { from { transform: translateX(0); } to { transform: translateX(-100%); } }
+
+        .reveal { opacity: 0; transform: translateY(30px); transition: all 0.8s ease-out; }
+        .reveal.active { opacity: 1; transform: translateY(0); }
+    </style>
 </head>
 <body class="antialiased font-sans selection:bg-swiss-red selection:text-white">
 
+    <div id="cursor"></div>
+    <div id="cursor-dot"></div>
     <canvas id="bg-canvas"></canvas>
 
     <nav class="fixed top-0 w-full z-50 px-6 py-6 md:px-12 flex justify-between items-center text-swiss-black bg-swiss-white/80 backdrop-blur-sm md:bg-transparent">
         <div class="text-xl font-bold tracking-tighter uppercase">Riel.Aug</div>
         <div class="hidden md:flex gap-8 text-sm font-bold tracking-widest uppercase">
-            <a href="#about" class="hover:text-swiss-red transition-colors">Tentang</a>
-            <a href="#skills" class="hover:text-swiss-red transition-colors">Keahlian</a>
-            <a href="#projects" class="hover:text-swiss-red transition-colors">Proyek</a>
-            <a href="#contact" class="hover:text-swiss-red transition-colors">Kontak</a>
+            <a href="#about" class="hover:text-swiss-red transition-colors nav-link">Tentang</a>
+            <a href="#experience" class="hover:text-swiss-red transition-colors nav-link">Pengalaman</a>
+            <a href="#projects" class="hover:text-swiss-red transition-colors nav-link">Proyek</a>
+            <a href="#contact" class="hover:text-swiss-red transition-colors nav-link">Kontak</a>
         </div>
     </nav>
 
@@ -59,15 +89,17 @@
                 </div>
                 <div class="col-span-1 md:col-span-6 lg:col-span-4 opacity-0 hero-sub-anim">
                     <p class="text-xl md:text-2xl font-medium leading-tight mb-8 text-swiss-gray">
-                        Membangun infrastruktur server yang terukur dan efisien. Mengubah logika menjadi sistem yang stabil.
+                        Insinyur sistem yang berfokus pada skalabilitas tinggi, integritas data, dan optimasi runtime.
                     </p>
-                    <a href="#projects" class="inline-block bg-swiss-black text-swiss-white hover:bg-swiss-red px-8 py-4 font-bold uppercase tracking-widest text-sm transition-colors">Eksplorasi Proyek</a>
+                    <div class="flex gap-4">
+                        <a href="#projects" class="bg-swiss-black text-swiss-white hover:bg-swiss-red px-8 py-4 font-bold uppercase tracking-widest text-sm transition-all duration-300">Eksplorasi Proyek</a>
+                    </div>
                 </div>
             </div>
         </header>
 
         <!-- Marquee -->
-        <div class="marquee">
+        <div class="marquee relative z-20">
             <div class="marquee-content">
                 <span class="font-black uppercase tracking-tighter text-2xl">Redis</span>
                 <span class="font-black uppercase tracking-tighter text-2xl text-swiss-red">/</span>
@@ -76,6 +108,8 @@
                 <span class="font-black uppercase tracking-tighter text-2xl">ElysiaJS</span>
                 <span class="font-black uppercase tracking-tighter text-2xl text-swiss-red">/</span>
                 <span class="font-black uppercase tracking-tighter text-2xl">PostgreSQL</span>
+                <span class="font-black uppercase tracking-tighter text-2xl text-swiss-red">/</span>
+                <span class="font-black uppercase tracking-tighter text-2xl">Bun Runtime</span>
             </div>
             <div class="marquee-content" aria-hidden="true">
                 <span class="font-black uppercase tracking-tighter text-2xl">Redis</span>
@@ -85,15 +119,66 @@
                 <span class="font-black uppercase tracking-tighter text-2xl">ElysiaJS</span>
                 <span class="font-black uppercase tracking-tighter text-2xl text-swiss-red">/</span>
                 <span class="font-black uppercase tracking-tighter text-2xl">PostgreSQL</span>
+                <span class="font-black uppercase tracking-tighter text-2xl text-swiss-red">/</span>
+                <span class="font-black uppercase tracking-tighter text-2xl">Bun Runtime</span>
             </div>
         </div>
 
+        <!-- 01. About / Philosophy -->
+        <section id="about" class="py-32 px-6 md:px-12 reveal">
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-12">
+                <div class="col-span-1 md:col-span-4">
+                    <h2 class="text-4xl md:text-6xl font-black uppercase tracking-tighter">01. Filosofi</h2>
+                </div>
+                <div class="col-span-1 md:col-span-8">
+                    <p class="text-3xl md:text-5xl font-bold leading-tight tracking-tight uppercase mb-12">
+                        "Kode yang baik bukan hanya tentang bekerja, tapi tentang <span class="text-swiss-red">ketahanan</span> di bawah beban tinggi."
+                    </p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-12 text-swiss-gray font-medium text-lg">
+                        <p>Saya percaya bahwa arsitektur backend haruslah transparan dan efisien. Dengan menggunakan teknologi modern seperti Bun dan ElysiaJS, saya membangun API yang tidak hanya cepat tetapi juga memiliki keamanan tipe data yang kuat.</p>
+                        <p>Fokus saya adalah pada eliminasi bottleneck, optimasi database query, dan memastikan setiap milidetik waktu respons server sangat berharga bagi pengalaman pengguna.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 02. Experience Section -->
+        <section id="experience" class="py-32 px-6 md:px-12 border-t-2 border-swiss-black bg-swiss-black text-swiss-white reveal">
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-12">
+                <div class="col-span-1 md:col-span-4">
+                    <h2 class="text-4xl md:text-6xl font-black uppercase tracking-tighter text-swiss-red">02. Riwayat</h2>
+                </div>
+                <div class="col-span-1 md:col-span-8">
+                    <div class="space-y-12">
+                        <!-- Exp 1 -->
+                        <div class="border-b border-swiss-darkGray pb-8">
+                            <div class="flex flex-col md:flex-row justify-between mb-4 italic text-swiss-gray font-mono text-sm uppercase">
+                                <span>Independent Developer</span>
+                                <span>2023 — Sekarang</span>
+                            </div>
+                            <h3 class="text-3xl font-bold uppercase tracking-tighter">Backend Engineer & Systems Architect</h3>
+                            <p class="mt-4 text-swiss-gray max-w-2xl">Membangun platform streaming (Shienime) dengan fokus pada efisiensi API, integrasi Redis untuk caching, dan manajemen database real-time.</p>
+                        </div>
+                        <!-- Exp 2 -->
+                        <div class="border-b border-swiss-darkGray pb-8">
+                            <div class="flex flex-col md:flex-row justify-between mb-4 italic text-swiss-gray font-mono text-sm uppercase">
+                                <span>Open Source Contributor</span>
+                                <span>2022 — Sekarang</span>
+                            </div>
+                            <h3 class="text-3xl font-bold uppercase tracking-tighter">JavaScript Specialist</h3>
+                            <p class="mt-4 text-swiss-gray max-w-2xl">Berkontribusi pada ekosistem runtime modern, mengoptimalkan library kecil, dan berbagi pengetahuan tentang keamanan API.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <!-- 03. Projects Section -->
-        <section id="projects" class="py-32 px-6 md:px-12 border-t-2 border-swiss-black">
+        <section id="projects" class="py-32 px-6 md:px-12 border-t-2 border-swiss-black reveal">
             <div class="grid grid-cols-1 md:grid-cols-12 gap-12">
                 <div class="col-span-1 md:col-span-4">
                     <h2 class="text-4xl md:text-6xl font-black uppercase tracking-tighter">03. Proyek</h2>
-                    <p class="mt-4 text-swiss-gray text-sm font-bold uppercase tracking-widest">Fetched from External GitHub Source</p>
+                    <p class="mt-4 text-swiss-gray text-sm font-bold uppercase tracking-widest">Live from GitHub Source</p>
                 </div>
                 <div id="project-container" class="col-span-1 md:col-span-8 grid grid-cols-1 md:grid-cols-2 gap-4">
                     <!-- Data Proyek akan muncul di sini via JS -->
@@ -103,23 +188,141 @@
         </section>
 
         <!-- Kontak -->
-        <section id="contact" class="py-32 px-6 md:px-12 bg-swiss-black text-swiss-white">
+        <section id="contact" class="py-32 px-6 md:px-12 bg-swiss-black text-swiss-white reveal">
             <div class="grid grid-cols-1 md:grid-cols-12 gap-12">
                 <div class="col-span-1 md:col-span-4">
                     <h2 class="text-4xl md:text-6xl font-black uppercase tracking-tighter text-swiss-red">04. Kontak</h2>
                 </div>
                 <div class="col-span-1 md:col-span-8">
-                    <h3 class="text-4xl md:text-7xl font-black uppercase tracking-tighter mb-16">Inisiasi Koneksi.</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 border-t border-swiss-gray pt-8">
+                    <h3 class="text-4xl md:text-7xl font-black uppercase tracking-tighter mb-16">Mulai Protokol.<br>Koneksi.</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-12 border-t border-swiss-darkGray pt-8">
                         <div>
-                            <span class="text-swiss-gray font-bold text-xs uppercase block mb-2">Email</span>
-                            <a href="mailto:public.rielaugustus@gmail.com" class="text-xl hover:text-swiss-red transition-colors">public.rielaugustus@gmail.com</a>
+                            <span class="text-swiss-gray font-bold text-xs uppercase block mb-4">Saluran Utama</span>
+                            <a href="mailto:public.rielaugustus@gmail.com" class="text-xl md:text-2xl hover:text-swiss-red transition-colors font-bold break-all">public.rielaugustus@gmail.com</a>
+                        </div>
+                        <div>
+                            <span class="text-swiss-gray font-bold text-xs uppercase block mb-4">Status Geografis</span>
+                            <p class="text-xl md:text-2xl font-bold uppercase tracking-tighter">Jakarta, IDN</p>
                         </div>
                     </div>
                 </div>
             </div>
         </section>
+
+        <footer class="py-12 px-6 md:px-12 border-t border-swiss-darkGray bg-swiss-black text-swiss-gray text-[10px] font-bold uppercase tracking-[0.3em] flex flex-col md:flex-row justify-between gap-4">
+            <div>© 2024 RIEL AUGUSTUS / SYSTEM STABLE</div>
+            <div>Dibuat dengan ElysiaJS & Astro Mindset</div>
+        </footer>
     </div>
-    <script src="index.js"></script>
+
+    <script>
+        const JSON_URL = 'https://raw.githubusercontent.com/CieL7s/porto/refs/heads/main/porto.js'; 
+        async function loadProjects() {
+            const container = document.getElementById('project-container');
+            try {
+                const response = await fetch(JSON_URL);
+                const rawText = await response.text();
+                
+                let projects;
+                try {
+                    // Coba bersihkan jika ada format export atau variabel
+                    const cleanJson = rawText.includes('=') ? rawText.split('=')[1].trim().replace(/;$/, '') : rawText;
+                    projects = JSON.parse(cleanJson);
+                } catch (e) {
+                    console.warn("Parsing JSON gagal, mencoba eval.");
+                    // Eval hanya jika formatnya beneran JS array
+                    projects = eval(rawText.replace(/export const projects = /, ''));
+                }
+
+                container.innerHTML = '';
+                projects.forEach((project, index) => {
+                    const card = `
+                        <a href="${project.link || '#'}" target="_blank" class="border-2 border-swiss-black p-8 group hover:bg-swiss-black transition-all duration-500 flex flex-col justify-between h-full reveal-child">
+                            <div>
+                                <div class="flex justify-between items-start mb-4">
+                                    <span class="text-swiss-red font-bold tracking-widest text-[10px] uppercase">${project.type || 'Backend Project'}</span>
+                                    <span class="text-[10px] font-mono text-swiss-gray group-hover:text-swiss-white/50">#0${index + 1}</span>
+                                </div>
+                                <h3 class="text-3xl font-black uppercase tracking-tighter mb-4 group-hover:text-swiss-white">${project.title}</h3>
+                                <div class="font-mono text-[9px] mb-6 p-2 bg-black/5 group-hover:bg-white/5 text-swiss-gray group-hover:text-swiss-white/40 border border-black/5 leading-tight">
+                                    ${(project.code_preview || 'GET /v1/node/status HTTP/1.1').replace(/\n/g, '<br>')}
+                                </div>
+                                <p class="text-sm text-swiss-gray group-hover:text-swiss-white/70 mb-8 line-clamp-3">${project.description}</p>
+                            </div>
+                            <div class="flex flex-wrap gap-2 group-hover:opacity-80">
+                                ${(project.tech || []).map(t => `<span class="px-2 py-1 bg-swiss-black text-swiss-white group-hover:bg-swiss-red text-[8px] font-bold uppercase tracking-widest transition-colors">${t}</span>`).join('')}
+                            </div>
+                        </a>
+                    `;
+                    container.innerHTML += card;
+                });
+            } catch (err) {
+                console.error("Gagal memuat proyek:", err);
+                container.innerHTML = `<p class="text-swiss-red font-bold uppercase">Gagal sinkronisasi data.</p>`;
+            }
+        }
+        const cursor = document.getElementById('cursor');
+        const cursorDot = document.getElementById('cursor-dot');
+        
+        document.addEventListener('mousemove', (e) => {
+            const posX = e.clientX;
+            const posY = e.clientY;
+
+            cursor.style.transform = `translate3d(${posX - 10}px, ${posY - 10}px, 0)`;
+            cursorDot.style.transform = `translate3d(${posX - 2}px, ${posY - 2}px, 0)`;
+        });
+
+        document.querySelectorAll('a, button').forEach(el => {
+            el.addEventListener('mouseenter', () => cursor.style.transform += ' scale(2)');
+            el.addEventListener('mouseleave', () => cursor.style.transform = cursor.style.transform.replace(' scale(2)', ''));
+        });
+        let scene, camera, renderer, geometryGroup;
+        function initThree() {
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.z = 5;
+            renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('bg-canvas'), antialias: true, alpha: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+            geometryGroup = new THREE.Group();
+            const geometry = new THREE.IcosahedronGeometry(3, 1);
+            const material = new THREE.MeshBasicMaterial({ color: 0x000000, wireframe: true, transparent: true, opacity: 0.2 });
+            geometryGroup.add(new THREE.Mesh(geometry, material));
+            scene.add(geometryGroup);
+            animate();
+        }
+
+        function animate() {
+            geometryGroup.rotation.x += 0.001;
+            geometryGroup.rotation.y += 0.002;
+            renderer.render(scene, camera);
+            requestAnimationFrame(animate);
+        }
+        function reveal() {
+            const reveals = document.querySelectorAll(".reveal");
+            reveals.forEach(el => {
+                const windowHeight = window.innerHeight;
+                const elementTop = el.getBoundingClientRect().top;
+                const elementVisible = 150;
+                if (elementTop < windowHeight - elementVisible) {
+                    el.classList.add("active");
+                }
+            });
+        }
+
+        window.addEventListener("scroll", reveal);
+
+        window.onload = () => {
+            initThree();
+            loadProjects();
+            reveal();
+            
+            // Hero Animation
+            anime.timeline({ easing: 'easeOutExpo' })
+                .add({ targets: '.hero-anim', translateY: [50, 0], opacity: [0, 1], duration: 1200, delay: 300 })
+                .add({ targets: '.hero-sub-anim', translateY: [20, 0], opacity: [0, 1], duration: 1000 }, '-=800');
+        };
+    </script>
 </body>
 </html>
